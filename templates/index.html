@@ -4,58 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Classification</title>
-    
     <style>
+        /* Reset some default styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Body styling */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Main container */
+        .container {
             text-align: center;
-            margin-top: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            margin-top: 20px;
-        }
-        input[type="file"] {
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        img {
-            margin-top: 20px;
-            max-width: 300px;
+            padding: 2rem;
             border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
         }
-        h2 {
-            margin-top: 20px;
+
+        /* Headings */
+        h1, h2 {
             color: #333;
+            margin-bottom: 1rem;
+        }
+
+        /* Form styling */
+        form {
+            margin-bottom: 1.5rem;
+        }
+        
+        input[type="file"] {
+            margin-bottom: 1rem;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Image styling */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        /* Prediction text */
+        .prediction-text {
+            font-size: 1.2rem;
+            color: #007bff;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
-    <h1>Upload an Image for Classification</h1>
-    <form action="/predict" method="post" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" required>
-        <button type="submit">Classify</button>
-    </form>
+    <div class="container">
+        <h1>Image Classification</h1>
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" required>
+            <input type="submit" value="Upload and Classify">
+        </form>
 
-    {% if prediction %}
-        <h2>Prediction: {{ prediction }}</h2>
-        <img src="{{ url_for('uploaded_file', filename=image_path) }}" alt="Uploaded Image">
-    {% endif %}
+        {% if prediction %}
+            <div class="prediction-text">Prediction: {{ prediction }}</div>
+            <h3>Original Image:</h3>
+            <img src="{{ image_path }}" alt="Uploaded Image">
+            <h3>Annotated Image:</h3>
+            <img src="{{ annotated_image_path }}" alt="Annotated Image">
+        {% endif %}
+    </div>
 </body>
 </html>

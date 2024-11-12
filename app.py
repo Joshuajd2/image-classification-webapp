@@ -8,10 +8,9 @@ import requests
 # Initialize Flask app
 app = Flask(__name__)
 
-# Set the upload folder for images (use Gitpod's accessible folder structure)
-app.config['UPLOAD_FOLDER'] = '/workspace/image-classification-webapp/app/static/uploads'
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+# Set the upload folder for images
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Load pre-trained ResNet model from torchvision
 model = models.resnet50(pretrained=True)
@@ -62,7 +61,11 @@ def predict():
     class_label = labels[str(predicted_class)][1]
 
     # Return the result to the frontend
-    return render_template('index.html', image_path=f'uploads/{filename}', prediction=class_label)
+    return render_template(
+        'index.html',
+        image_path=f'static/uploads/{filename}',
+        prediction=class_label
+    )
 
 # Route to serve uploaded images as static files
 @app.route('/static/uploads/<filename>')
@@ -70,6 +73,4 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    # Ensure the app runs on the port provided by Render
-    port = os.getenv("PORT", 5000)
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
