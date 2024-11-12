@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_from_directory
 import torch
 from torchvision import models, transforms
 from PIL import Image
@@ -7,6 +7,11 @@ import requests
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Set the upload folder for images (use Gitpod's accessible folder structure)
+app.config['UPLOAD_FOLDER'] = '/workspace/image-classification-webapp/app/static/uploads'
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Load pre-trained ResNet model from torchvision
 model = models.resnet50(pretrained=True)
@@ -32,7 +37,14 @@ def predict():
         return jsonify({"error": "No image file provided"}), 400
 
     file = request.files['image']
-    img = Image.open(file.stream)
+    filename = file.filename
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    # Save the uploaded image to the server
+    file.save(file_path)
+
+    # Open the image
+    img = Image.open(file_path)
 
     # Apply image transformation
     img_tensor = transform(img).unsqueeze(0)
@@ -50,7 +62,12 @@ def predict():
     class_label = labels[str(predicted_class)][1]
 
     # Return the result to the frontend
-    return render_template('index.html', image_path=file.filename, prediction=class_label)
+    return render_template('index.html', image_path=f'uploads/{filename}', prediction=class_label)
+
+# Route to serve uploaded images as static files
+@app.route('/static/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
