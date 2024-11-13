@@ -5,95 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Classification</title>
     <style>
-        /* Reset some default styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        /* Body styling */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            margin-top: 50px;
+        }
+        h1 {
             color: #333;
         }
-
-        /* Main container */
         .container {
             text-align: center;
-            padding: 2rem;
-            border-radius: 8px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            margin-top: 20px;
             width: 100%;
+            max-width: 500px;
         }
-
-        /* Headings */
-        h1, h2 {
-            color: #333;
-            margin-bottom: 1rem;
+        .upload-section {
+            margin-bottom: 20px;
         }
-
-        /* Form styling */
-        form {
-            margin-bottom: 1.5rem;
+        .upload-section input[type="file"] {
+            display: none;
         }
-        
-        input[type="file"] {
-            margin-bottom: 1rem;
-        }
-
-        input[type="submit"] {
-            background-color: #007bff;
-            color: #ffffff;
-            padding: 0.5rem 1rem;
+        .upload-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
         }
-
-        input[type="submit"]:hover {
-            background-color: #0056b3;
+        .results {
+            margin-top: 30px;
+            text-align: center;
         }
-
-        /* Image styling */
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-top: 1rem;
+        .image-container img {
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
-
-        /* Prediction text */
-        .prediction-text {
-            font-size: 1.2rem;
-            color: #007bff;
-            margin: 1rem 0;
+        .prediction {
+            font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Image Classification</h1>
-        <form action="/predict" method="post" enctype="multipart/form-data">
-            <input type="file" name="image" required>
-            <input type="submit" value="Upload and Classify">
-        </form>
 
+<h1>Image Classification with ResNet</h1>
+
+<div class="container">
+    <form id="upload-form" method="post" action="/predict" enctype="multipart/form-data">
+        <div class="upload-section">
+            <label for="image-upload" class="upload-btn">Choose an Image</label>
+            <input id="image-upload" type="file" name="image" accept="image/*" onchange="showButton()" required>
+        </div>
+        <button type="submit" id="classify-btn" class="upload-btn" style="display:none;">Classify Image</button>
+    </form>
+
+    <div class="results">
         {% if prediction %}
-            <div class="prediction-text">Prediction: {{ prediction }}</div>
-            <h3>Original Image:</h3>
-            <img src="{{ image_path }}" alt="Uploaded Image">
-            <h3>Annotated Image:</h3>
-            <img src="{{ annotated_image_path }}" alt="Annotated Image">
+            <div class="image-container">
+                <h2>Original Image</h2>
+                <img src="{{ original_image }}" alt="Original Uploaded Image">
+            </div>
+            <div class="image-container">
+                <h2>Annotated Image</h2>
+                <img src="{{ annotated_image }}" alt="Annotated Image with Prediction">
+            </div>
+            <div class="prediction">
+                <h2>Predicted Class: {{ prediction }}</h2>
+            </div>
         {% endif %}
     </div>
+</div>
+
+<script>
+    function showButton() {
+        document.getElementById('classify-btn').style.display = 'block';
+    }
+</script>
+
 </body>
 </html>
